@@ -160,8 +160,11 @@ app.put('/artists/:id', (req, res, next) => {
   const bodyCleaner = objClean(['name', 'movement', 'type', '_id', '_rev'])
 
   const cleanedBody = bodyCleaner(req.body)
-
-  reqFieldChecker(cleanedBody.type, req.method)
+  const missingFields = artistReqFieldChecker('PUT', cleanedBody)
+  if (not(isEmpty(missingFields))) {
+    next(new HTTPError(400, `Missing Fields: ${join(', ', missingFields)}`))
+    return
+  }
 
   updateArtist(cleanedBody, function(err, updatedArtist) {
     if (err) {
@@ -183,7 +186,7 @@ app.delete('/artists/:id', (req, res, next) => {
   })
 })
 
-//GET to list and search paintings (crudLS)
+//GET to list and search artists (crudLS)
 app.get('/artists', (req, res, next) => {
   const artistOptions = {
     include_docs: true,

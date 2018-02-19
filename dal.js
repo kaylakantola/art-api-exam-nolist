@@ -16,14 +16,7 @@ const createPainting = function(painting, cb) {
 }
 
 //GET a painting (cRudls)
-const getPainting = function(paintingId, cb) {
-  db.get(paintingId, function(err, painting) {
-    if (err) {
-      cb(err)
-    }
-    cb(null, painting)
-  })
-}
+const getPainting = paintingId => db.get(paintingId)
 
 //PUT to update a painting (crUdls)
 const updatePainting = function(painting, cb) {
@@ -65,14 +58,7 @@ const createArtist = function(artist, cb) {
 }
 
 //GET an artist (cRudls)
-const getArtist = function(artistId, cb) {
-  db.get(artistId, function(err, artist) {
-    if (err) {
-      cb(err)
-    }
-    cb(null, artist)
-  })
-}
+const getArtist = artistId => db.get(artistId)
 
 //PUT to update an artist (crUdls)
 const updateArtist = function(artist, cb) {
