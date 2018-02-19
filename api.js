@@ -8,7 +8,8 @@ app.use(bodyParser.json()) //… and runs it.
 const {} = require(‘ramda’)
 const {} = require(‘./dal’)
 const port = propOr(9999, ‘PORT’, process.env) //cool, now you have a port!
-
+const reqFieldChecker = require('./lib/check-req-fields.js')
+const postReqFields = []
 
 //HOME
 app.get('/', function(req, res, next) {
