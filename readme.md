@@ -72,3 +72,160 @@ You should receive back:
 ```
 
 Hooray! I deem thee started!
+
+## Basics
+
+### Base URL
+
+All endpoints within the paintings are located at the following base URL:
+
+```
+http://localhost:4000/
+```
+
+### Scheme
+
+This is a RESTful HTTP-based API using JSON to represent paintings and artists.
+
+### HTTP Verbs & Endpoints
+
+* `POST`
+* `GET`
+* `PUT`
+* `DELETE`
+
+The below explanation of endpoints use `/paintings` as the example. The same principles can also be applied to `/artists`, keeping in mind the required fields are different for artists.
+
+#### POST - create a painting
+
+Create a painting via a `POST` to the `/paintings` route, passing a painting JSON object in the request body.
+
+All of the fields are required.
+
+```
+POST /paintings
+
+{
+  "name": "Bal du moulin de la Galette",
+  "type": "painting",
+  "movement": "impressionism",
+  "artist": "Pierre-Auguste Renoires",
+  "yearCreated": "1876",
+  "museum": {
+    "name": "Musée d’Orsay",
+    "location": "Paris"
+  }
+}
+```
+
+A sucessfully created painting will result in a `201 - Created` response and the painting document will be returned in the response body. The response body will include the `ok status`, `id` and `rev` properties. See below.
+
+```
+{
+"ok": true,
+"id": "painting_bal-du-moulin-de-la-galette",
+"rev": "1-5236adfa236asdf4352",
+}
+```
+
+#### GET a specific painting
+
+Get a specific painting via a `GET` to the `/paintings/:id` route, retrieving a painting from the database.
+
+```
+GET /paintings/painting_bal-du-moulin-de-la-galette
+```
+
+The only required field is the `_id`
+
+A successful `GET` will result in a `200 - OK` response code and return a JSON object in the response body, representing the painting.
+
+```
+{
+  "_id": "painting_bal-du-moulin-de-la-galette",
+  "name": "Bal du moulin de la Galette",
+  "type": "painting",
+  "movement": "impressionism",
+  "artist": "Pierre-Auguste Renoires",
+  "yearCreated": "1876",
+  "museum": {
+    "name": "Musée d’Orsay",
+    "location": "Paris"
+  },
+  "_rev": "1-20d3af18c5f14c6e92e4c62b38265ed7"
+}
+```
+
+#### UPDATE a painting
+
+Update a specific painting via a `PUT` to the `/paintings/:id` route, retrieving a painting from the database and submitting a JSON object in the request body. In the below example, we are updating "movement" to "surrealism".
+
+Tip: Be sure to provide the most recent `_rev` value in the request body. Otherwise, you will receive a `409- conflict` error.
+
+All the fields are required.
+
+```
+PUT /paintings/painting_bal-du-moulin-de-la-galette
+
+{
+  "_id": "painting_bal-du-moulin-de-la-galette",
+  "name": "Bal du moulin de la Galette",
+  "type": "painting",
+  "movement": "surrealism",
+  "artist": "Pierre-Auguste Renoires",
+  "yearCreated": "1876",
+  "museum": {
+    "name": "Musée d’Orsay",
+    "location": "Paris"
+  },
+  "_rev": "1-20d3af18c5f14c6e92e4c62b38265ed7"
+}
+```
+
+A successful `PUT` will result an updated `_rev` and a `200 - OK` JSON object in the response body that reflects the changes in the request body (see below). It will return an `ok` status, `id` and a new `rev`. See below.
+
+```
+  {
+  "ok": true,
+  "id": "painting_bal-du-moulin-de-la-galette",
+  "rev": "2-5236adfa236asdf4352",
+  }
+```
+
+#### DELETE a painting
+
+`DELETE` a specific painting via the `/paintings/:id` route, retrieving a painting from the database and deleting the JSON object.
+
+```
+DELETE /paintings/painting_bal-du-moulin-de-la-galette
+```
+
+The only required field is the `_id` because we are not using the request body.
+
+A successful `DELETE` will result in a `204 - OK` response code and return a JSON object in the response body, representing the deleted painting
+
+```
+{
+"_id": "painting_bal-du-moulin-de-la-galette",
+"_rev": "1-5236adfa236asdf4352",
+"deleted": true
+}
+```
+
+### Content Types
+
+The content types are `/paintings` and `/artists`.
+
+###Response Status Codes
+
+#### Successful status codes
+
+**200 OK** - Occurs when you have completed a successful GET, PUT or DELETE.  
+**201 Created** - Occurs when you have completed a successful POST.
+
+#### Error status Codes
+
+**400 Bad Request** - Occurs when you try to POST an object, but you have not included all required fields in the request body.
+**404 Not Found** - Occurs when you try to GET an object that doesn't exist. Check to make sure the ID you entered is correct. Also occurs when you are trying to update an object with a PUT, but have not included the `_id` or `_rev`.
+**409 Conflict error** - Occurs when you have tried to PUT to update an object, but you have `_rev` value that is not current in the request body. Try doing a GET on that object to see what the most current `_rev` is. This may also occur when you're trying to POST a new object, but you've included `_rev` or `_id` properties in the request body.
+**500 Internal Server Error** - Dude, I'm so sorry, that's my bad. Shoot me an email and let me know - kayla@horriblemistakes.com.

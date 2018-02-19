@@ -10,18 +10,22 @@ const {
   createPainting,
   getPainting,
   updatePainting,
-  deletePainting
+  deletePainting,
+  createArtist,
+  getArtist,
+  updateArtist,
+  deleteArtist
 } = require('./dal')
 const port = propOr(9999, 'PORT', process.env) //cool, now you have a port!
 const reqFieldChecker = require('./lib/check-req-fields.js')
-const postReqFields = reqFieldChecker([
+const postPaintingReqFields = reqFieldChecker([
   'name',
   'movement',
   'artist',
   'yearCreated',
   'museum'
 ])
-const putReqFields = reqFieldChecker([
+const putPaintingReqFields = reqFieldChecker([
   'name',
   'movement',
   'artist',
@@ -39,10 +43,11 @@ app.get('/', function(req, res, next) {
 
 //POST a painting (Crudls)
 app.post('/paintings/', function(req, res, next) {
-  const missingFields = postReqFields(req.body)
+  const missingFields = postPaintingReqFields(req.body)
 
   if (not(isEmpty(missingFields))) {
-    new HTTPError(400, `Missing Fields: ${join(' ', postReqFields(req.body))}`)
+    next(new HTTPError(400, `Missing Fields: ${join(', ', missingFields)}`))
+    return
   }
 
   createPainting(req.body, function(err, createdPainting) {
@@ -62,7 +67,7 @@ app.get('/paintings/:id', (req, res, next) => {
       next(new HTTPError(err.status, err.message, err))
       return
     }
-    res.send(painting)
+    res.status(200).send(painting)
     return
   })
 })
@@ -85,7 +90,7 @@ app.put('/paintings/:id', (req, res, next) => {
 
   const cleanedBody = bodyCleaner(req.body)
 
-  const missingFields = putReqFields(cleanedBody)
+  const missingFields = putPaintingReqFields(cleanedBody)
 
   if (not(isEmpty(missingFields))) {
     next(
@@ -102,7 +107,7 @@ app.put('/paintings/:id', (req, res, next) => {
       next(new HTTPError(err.status, err.message, err))
       return
     }
-    res.send(updatedPainting)
+    res.status(200).send(updatedPainting)
   })
 })
 
@@ -113,7 +118,84 @@ app.delete('/paintings/:id', (req, res, next) => {
       next(new HTTPError(err.status, err.message, err))
       return
     }
-    res.send(painting)
+    res.status(200).send(painting)
+  })
+})
+
+//GET to list and search paintings (crudLS)
+
+//POST an artist (Crudls)
+app.post('/artists/', function(req, res, next) {
+  const missingFields = postArtistReqFields(req.body)
+
+  if (not(isEmpty(missingFields))) {
+    next(new HTTPError(400, `Missing Fields: ${join(', ', missingFields)}`))
+    return
+  }
+
+  createArtist(req.body, function(err, createdArtist) {
+    if (err) {
+      next(err.status, err.message, err)
+      return
+    }
+    res.status(201).send(createdArtist)
+    return
+  })
+})
+
+//GET an artist (cRudls)
+app.get('/artists/:id', (req, res, next) => {
+  getArtist(req.params.id, function(err, artist) {
+    if (err) {
+      next(new HTTPError(err.status, err.message, err))
+      return
+    }
+    res.status(200).send(artist)
+    return
+  })
+})
+
+//PUT to update an artist (crUdls)
+app.put('/artists/:id', (req, res, next) => {
+  if (isEmpty(prop('body', req))) {
+    next(new HTTPError(400, 'Missing request body'))
+  }
+
+  const bodyCleaner = objClean([
+    ///KAYLAAAaaAAaAAAA DONT FORGETTTT//
+  ])
+
+  const cleanedBody = bodyCleaner(req.body)
+
+  const missingFields = putArtistReqFields(cleanedBody)
+
+  if (not(isEmpty(missingFields))) {
+    next(
+      new HTTPError(
+        400,
+        `Request body missing these fields: ${join(',', missingFields)}`
+      )
+    )
+    return
+  }
+
+  updateArtist(cleanedBody, function(err, updatedPainting) {
+    if (err) {
+      next(new HTTPError(err.status, err.message, err))
+      return
+    }
+    res.status(200).send(updatedArtist)
+  })
+})
+
+//DELETE to delete an artist (cruDls)
+app.delete('/artists/:id', (req, res, next) => {
+  deleteArtist(req.params.id, function(err, artist) {
+    if (err) {
+      next(new HTTPError(err.status, err.message, err))
+      return
+    }
+    res.status(200).send(artist)
   })
 })
 
