@@ -17,33 +17,10 @@ const {
   deleteArtist
 } = require('./dal')
 const port = propOr(9999, 'PORT', process.env) //cool, now you have a port!
-const reqFieldChecker = require('./lib/check-req-fields.js')
-const postPaintingReqFields = reqFieldChecker([
-  'name',
-  'movement',
-  'artist',
-  'yearCreated',
-  'museum',
-  'type'
-])
-const putPaintingReqFields = reqFieldChecker([
-  'name',
-  'movement',
-  'artist',
-  'yearCreated',
-  'museum',
-  'type',
-  '_id',
-  '_rev'
-])
-const postArtistReqFields = reqFieldChecker(['name', 'movement', 'type'])
-const putArtistReqFields = reqFieldChecker([
-  'name',
-  'movement',
-  'type',
-  '_id',
-  '_rev'
-])
+const {
+  paintingReqFieldChecker,
+  artistReqFieldChecker
+} = require('./lib/check-req-fields.js')
 const objClean = require('./lib/clean-obj')
 
 //HOME
@@ -53,13 +30,11 @@ app.get('/', function(req, res, next) {
 
 //POST a painting (Crudls)
 app.post('/paintings/', function(req, res, next) {
-  const missingFields = postPaintingReqFields(req.body)
-
+  const missingFields = paintingReqFieldChecker('POST', req.body)
   if (not(isEmpty(missingFields))) {
     next(new HTTPError(400, `Missing Fields: ${join(', ', missingFields)}`))
     return
   }
-
   createPainting(req.body, function(err, createdPainting) {
     if (err) {
       next(err.status, err.message, err)
@@ -94,21 +69,15 @@ app.put('/paintings/:id', (req, res, next) => {
     'artist',
     'yearCreated',
     'museum',
+    'type',
     '_id',
     '_rev'
   ])
 
   const cleanedBody = bodyCleaner(req.body)
-
-  const missingFields = putPaintingReqFields(cleanedBody)
-
+  const missingFields = paintingReqFieldChecker('PUT', cleanedBody)
   if (not(isEmpty(missingFields))) {
-    next(
-      new HTTPError(
-        400,
-        `Request body missing these fields: ${join(',', missingFields)}`
-      )
-    )
+    next(new HTTPError(400, `Missing Fields: ${join(', ', missingFields)}`))
     return
   }
 
@@ -136,13 +105,11 @@ app.delete('/paintings/:id', (req, res, next) => {
 
 //POST an artist (Crudls)
 app.post('/artists/', function(req, res, next) {
-  const missingFields = postArtistReqFields(req.body)
-
+  const missingFields = artistReqFieldChecker('POST', req.body)
   if (not(isEmpty(missingFields))) {
     next(new HTTPError(400, `Missing Fields: ${join(', ', missingFields)}`))
     return
   }
-
   createArtist(req.body, function(err, createdArtist) {
     if (err) {
       next(err.status, err.message, err)
@@ -175,17 +142,7 @@ app.put('/artists/:id', (req, res, next) => {
 
   const cleanedBody = bodyCleaner(req.body)
 
-  const missingFields = putArtistReqFields(cleanedBody)
-
-  if (not(isEmpty(missingFields))) {
-    next(
-      new HTTPError(
-        400,
-        `Request body missing these fields: ${join(',', missingFields)}`
-      )
-    )
-    return
-  }
+  reqFieldChecker(cleanedBody.type, req.method)
 
   updateArtist(cleanedBody, function(err, updatedArtist) {
     if (err) {
