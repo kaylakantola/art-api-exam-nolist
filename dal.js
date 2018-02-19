@@ -35,9 +35,24 @@ const updatePainting = function(painting, cb) {
 }
 
 //DELETE to delete a painting (cruDls)
+const deletePainting = function(paintingId, cb) {
+  db.get(paintingId, function(err, painting) {
+    if (err) {
+      cb(err)
+      return
+    }
+    db.remove(painting, function(err, painting) {
+      if (err) {
+        cb(err)
+        return
+      }
+      cb(null, painting)
+    })
+  })
+}
 
 //GET to list and search paintings (crudLS)
 
-const dal = { createPainting, getPainting, updatePainting }
+const dal = { createPainting, getPainting, updatePainting, deletePainting }
 
 module.exports = dal

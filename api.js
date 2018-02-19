@@ -6,7 +6,12 @@ const HTTPError = require('node-http-error') // hooray, a way to handle errors!
 const bodyParser = require('body-parser') //brings in body-parser…
 app.use(bodyParser.json()) //… and runs it.
 const { propOr, not, isEmpty, indexOf, prop, join } = require('ramda')
-const { createPainting, getPainting, updatePainting } = require('./dal')
+const {
+  createPainting,
+  getPainting,
+  updatePainting,
+  deletePainting
+} = require('./dal')
 const port = propOr(9999, 'PORT', process.env) //cool, now you have a port!
 const reqFieldChecker = require('./lib/check-req-fields.js')
 const postReqFields = reqFieldChecker([
@@ -102,6 +107,15 @@ app.put('/paintings/:id', (req, res, next) => {
 })
 
 //DELETE to delete a painting (cruDls)
+app.delete('/paintings/:id', (req, res, next) => {
+  deletePainting(req.params.id, function(err, painting) {
+    if (err) {
+      next(new HTTPError(err.status, err.message, err))
+      return
+    }
+    res.send(painting)
+  })
+})
 
 //GET to list and search paintings (crudLS)
 
