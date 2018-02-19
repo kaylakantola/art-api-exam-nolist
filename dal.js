@@ -3,9 +3,10 @@ require('dotenv').config() //connects to .env
 const PouchDB = require('pouchdb-core')
 PouchDB.plugin(require('pouchdb-adapter-http'))
 PouchDB.plugin(require('pouchdb-find'))
-const HTTPError = require('node-http-error') //error handler, yay!
+const pkGen = require('./lib/pk-generator.js') //generates unique id
+const HTTPError = require('node-http-error')
+const { pluck } = require('ramda')
 const db = new PouchDB(process.env.COUCHDB_URL) // most important, this is how you talk to your database!
-const pkGen = require('./lib/pk-generator.js')
 
 //POST a painting (Crudls)
 const createPainting = function(painting, cb) {
@@ -53,6 +54,8 @@ const deletePainting = function(paintingId, cb) {
 }
 
 //GET to list and search paintings (crudLS)
+const getPaintings = options =>
+  db.allDocs(options).then(result => pluck('doc', result.rows))
 
 //POST an artist (Crudls)
 const createArtist = function(artist, cb) {
@@ -100,16 +103,21 @@ const deleteArtist = function(artistId, cb) {
 }
 
 //GET to list and search artists (crudLS)
+const getArtists = options =>
+  db.allDocs(options).then(result => pluck('doc', result.rows))
 
+//EXPORT IT OUT
 const dal = {
   createPainting,
   getPainting,
   updatePainting,
   deletePainting,
+  getPaintings,
   createArtist,
   getArtist,
   updateArtist,
-  deleteArtist
+  deleteArtist,
+  getArtists
 }
 
 module.exports = dal
