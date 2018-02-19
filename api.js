@@ -6,7 +6,7 @@ const HTTPError = require('node-http-error') // hooray, a way to handle errors!
 const bodyParser = require('body-parser') //brings in body-parser…
 app.use(bodyParser.json()) //… and runs it.
 const { propOr, not, isEmpty } = require('ramda')
-const { createPainting } = require('./dal')
+const { createPainting, getPainting } = require('./dal')
 const port = propOr(9999, 'PORT', process.env) //cool, now you have a port!
 const reqFieldChecker = require('./lib/check-req-fields.js')
 const postReqFields = reqFieldChecker([
@@ -16,6 +16,15 @@ const postReqFields = reqFieldChecker([
   'yearCreated',
   'museum'
 ])
+const putReqFields = reqFieldChecker([
+  'name',
+  'movement',
+  'artist',
+  'yearCreated',
+  'museum',
+  '_id',
+  'rev'
+])
 
 //HOME
 app.get('/', function(req, res, next) {
@@ -23,7 +32,7 @@ app.get('/', function(req, res, next) {
 })
 
 //POST a painting (Crudls)
-app.post('/', function(req, res, next) {
+app.post('/paintings/', function(req, res, next) {
   const missingFields = postReqFields(req.body)
 
   if (not(isEmpty(missingFields))) {
@@ -41,6 +50,16 @@ app.post('/', function(req, res, next) {
 })
 
 //GET a painting (cRudls)
+app.get('/paintings/:id', (req, res, next) => {
+  getPainting(req.params.id, function(err, painting) {
+    if (err) {
+      next(new HTTPError(err.status, err.message, err))
+      return
+    }
+    res.send(painting)
+    return
+  })
+})
 
 //PUT to update a painting (crUdls)
 

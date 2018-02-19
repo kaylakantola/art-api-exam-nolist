@@ -14,6 +14,14 @@ const createPainting = function(painting, cb) {
   db.put(painting, cb)
 }
 //GET a painting (cRudls)
+const getPainting = function(paintingId, cb) {
+  db.get(paintingId, function(err, painting) {
+    if (err) {
+      cb(err)
+    }
+    cb(null, painting)
+  })
+}
 
 //PUT to update a painting (crUdls)
 
@@ -21,6 +29,6 @@ const createPainting = function(painting, cb) {
 
 //GET to list and search paintings (crudLS)
 
-const dal = { createPainting }
+const dal = { createPainting, getPainting }
 
 module.exports = dal
