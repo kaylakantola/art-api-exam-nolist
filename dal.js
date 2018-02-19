@@ -5,14 +5,12 @@ PouchDB.plugin(require('pouchdb-adapter-http'))
 PouchDB.plugin(require('pouchdb-find'))
 const HTTPError = require('node-http-error') //error handler, yay!
 const db = new PouchDB(process.env.COUCHDB_URL) // most important, this is how you talk to your database!
-const articleKiller = require('./lib/name-adjust.js')
-const slugify = require('slugify')
-const { toLower } = require('ramda')
+const pkGen = require('./lib/pk-generator.js')
 
 //POST a painting (Crudls)
 const createPainting = function(painting, cb) {
-  const name = articleKiller(painting.name)
-  painting._id = `painting_${name}`
+  const newName = pkGen(painting.name)
+  painting._id = `painting_${newName}`
   db.put(painting, cb)
 }
 
@@ -58,7 +56,8 @@ const deletePainting = function(paintingId, cb) {
 
 //POST an artist (Crudls)
 const createArtist = function(artist, cb) {
-  artist._id = `artist_${slugify(toLower(artist.name))}`
+  const name = pkGen(artist.name)
+  artist._id = `artist_${name}`
   db.put(artist, cb)
 }
 
