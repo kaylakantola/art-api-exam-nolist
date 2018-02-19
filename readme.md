@@ -216,16 +216,16 @@ A successful `DELETE` will result in a `204 - OK` response code and return a JSO
 
 The content types are `/paintings` and `/artists`.
 
-###Response Status Codes
+### Response Status Codes
 
 #### Successful status codes
 
-**200 OK** - Occurs when you have completed a successful GET, PUT or DELETE.  
-**201 Created** - Occurs when you have completed a successful POST.
+- **200 OK** - Occurs when you have completed a successful GET, PUT or DELETE.  
+- **201 Created** - Occurs when you have completed a successful POST.
 
 #### Error status Codes
 
-**400 Bad Request** - Occurs when you try to POST an object, but you have not included all required fields in the request body.
-**404 Not Found** - Occurs when you try to GET an object that doesn't exist. Check to make sure the ID you entered is correct. Also occurs when you are trying to update an object with a PUT, but have not included the `_id` or `_rev`.
-**409 Conflict error** - Occurs when you have tried to PUT to update an object, but you have `_rev` value that is not current in the request body. Try doing a GET on that object to see what the most current `_rev` is. This may also occur when you're trying to POST a new object, but you've included `_rev` or `_id` properties in the request body.
-**500 Internal Server Error** - Dude, I'm so sorry, that's my bad. Shoot me an email and let me know - kayla@horriblemistakes.com.
+- **400 Bad Request** - Occurs when you try to POST an object, but you have not included all required fields in the request body.
+- **404 Not Found** - Occurs when you try to GET an object that doesn't exist. Check to make sure the ID you entered is correct. Also occurs when you are trying to update an object with a PUT, but have not included the `_id` or `_rev`.
+- **409 Conflict error** - Occurs when you have tried to PUT to update an object, but you have `_rev` value that is not current in the request body. Try doing a GET on that object to see what the most current `_rev` is. This may also occur when you're trying to POST a new object, but you've included `_rev` or `_id` properties in the request body.
+- **500 Internal Server Error** - Dude, I'm so sorry, that's my bad. Shoot me an email and let me know - kayla@horriblemistakes.com.
