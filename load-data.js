@@ -62,6 +62,48 @@ db
       artist: 'Pierre-Auguste Renoires',
       yearCreated: '1876',
       museum: { name: 'Musée d’Orsay', location: 'Paris' }
+    },
+    {
+      _id: 'artist_pierre-auguste-renoires',
+      name: 'Pierre-Auguste Renoires',
+      movement: 'impressionism',
+      type: 'artist'
+    },
+    {
+      _id: 'artist_pablo-picasso',
+      name: 'Pablo Picasso',
+      movement: 'surrealism',
+      type: 'artist'
+    },
+    {
+      _id: 'artist_georges-seurat',
+      name: 'Georges Seurat',
+      movement: 'impressionism',
+      type: 'artist'
+    },
+    {
+      _id: 'artist_leonardo-da-vinci',
+      name: 'Leonardo da Vinci',
+      movement: 'renaissance',
+      type: 'artist'
+    },
+    {
+      _id: 'artist_claude-monet',
+      name: 'Claude Monet',
+      movement: 'impressionism',
+      type: 'artist'
+    },
+    {
+      _id: 'artist_vincent-van-gogh',
+      name: 'Vincent Van Gogh',
+      movement: 'post-impressionism',
+      type: 'artist'
+    },
+    {
+      _id: 'artist_frida-kahlo',
+      name: 'Frida Kahlo',
+      movement: 'surrealism',
+      type: 'artist'
     }
   ])
   .then(resp => {

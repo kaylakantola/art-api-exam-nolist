@@ -23,7 +23,8 @@ const postPaintingReqFields = reqFieldChecker([
   'movement',
   'artist',
   'yearCreated',
-  'museum'
+  'museum',
+  'type'
 ])
 const putPaintingReqFields = reqFieldChecker([
   'name',
@@ -31,6 +32,15 @@ const putPaintingReqFields = reqFieldChecker([
   'artist',
   'yearCreated',
   'museum',
+  'type',
+  '_id',
+  '_rev'
+])
+const postArtistReqFields = reqFieldChecker(['name', 'movement', 'type'])
+const putArtistReqFields = reqFieldChecker([
+  'name',
+  'movement',
+  'type',
   '_id',
   '_rev'
 ])
@@ -161,9 +171,7 @@ app.put('/artists/:id', (req, res, next) => {
     next(new HTTPError(400, 'Missing request body'))
   }
 
-  const bodyCleaner = objClean([
-    ///KAYLAAAaaAAaAAAA DONT FORGETTTT//
-  ])
+  const bodyCleaner = objClean(['name', 'movement', 'type', '_id', '_rev'])
 
   const cleanedBody = bodyCleaner(req.body)
 
@@ -179,7 +187,7 @@ app.put('/artists/:id', (req, res, next) => {
     return
   }
 
-  updateArtist(cleanedBody, function(err, updatedPainting) {
+  updateArtist(cleanedBody, function(err, updatedArtist) {
     if (err) {
       next(new HTTPError(err.status, err.message, err))
       return
