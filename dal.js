@@ -24,11 +24,20 @@ const getPainting = function(paintingId, cb) {
 }
 
 //PUT to update a painting (crUdls)
+const updatePainting = function(painting, cb) {
+  db.put(painting, function(err, updatedPainting) {
+    if (err) {
+      cb(err)
+      return
+    }
+    cb(null, updatedPainting)
+  })
+}
 
 //DELETE to delete a painting (cruDls)
 
 //GET to list and search paintings (crudLS)
 
-const dal = { createPainting, getPainting }
+const dal = { createPainting, getPainting, updatePainting }
 
 module.exports = dal

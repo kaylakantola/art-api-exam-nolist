@@ -5,8 +5,8 @@ const app = express() //… and runs it.
 const HTTPError = require('node-http-error') // hooray, a way to handle errors!
 const bodyParser = require('body-parser') //brings in body-parser…
 app.use(bodyParser.json()) //… and runs it.
-const { propOr, not, isEmpty } = require('ramda')
-const { createPainting, getPainting } = require('./dal')
+const { propOr, not, isEmpty, indexOf, prop, join } = require('ramda')
+const { createPainting, getPainting, updatePainting } = require('./dal')
 const port = propOr(9999, 'PORT', process.env) //cool, now you have a port!
 const reqFieldChecker = require('./lib/check-req-fields.js')
 const postReqFields = reqFieldChecker([
@@ -23,8 +23,9 @@ const putReqFields = reqFieldChecker([
   'yearCreated',
   'museum',
   '_id',
-  'rev'
+  '_rev'
 ])
+const objClean = require('./lib/clean-obj')
 
 //HOME
 app.get('/', function(req, res, next) {
@@ -62,6 +63,43 @@ app.get('/paintings/:id', (req, res, next) => {
 })
 
 //PUT to update a painting (crUdls)
+app.put('/paintings/:id', (req, res, next) => {
+  if (isEmpty(prop('body', req))) {
+    next(new HTTPError(400, 'Missing request body'))
+  }
+
+  const bodyCleaner = objClean([
+    'name',
+    'movement',
+    'artist',
+    'yearCreated',
+    'museum',
+    '_id',
+    '_rev'
+  ])
+
+  const cleanedBody = bodyCleaner(req.body)
+
+  const missingFields = putReqFields(cleanedBody)
+
+  if (not(isEmpty(missingFields))) {
+    next(
+      new HTTPError(
+        400,
+        `Request body missing these fields: ${join(',', missingFields)}`
+      )
+    )
+    return
+  }
+
+  updatePainting(cleanedBody, function(err, updatedPainting) {
+    if (err) {
+      next(new HTTPError(err.status, err.message, err))
+      return
+    }
+    res.send(updatedPainting)
+  })
+})
 
 //DELETE to delete a painting (cruDls)
 
